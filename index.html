@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Scanner</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:black;
+color:white;
+text-align:center;
+overflow:hidden;
+}
+
+/* screen */
+
+.screen{
+height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+padding:20px;
+}
+
+/* QR */
+
+#qrPage img{
+width:260px;
+background:white;
+padding:15px;
+border-radius:10px;
+}
+
+/* scanner */
+
+.scan-box{
+width:220px;
+height:220px;
+border:3px solid #00ff88;
+position:relative;
+overflow:hidden;
+border-radius:10px;
+}
+
+.scan-line{
+width:100%;
+height:4px;
+background:#00ff88;
+position:absolute;
+animation:scan 2s infinite;
+}
+
+@keyframes scan{
+0%{top:0}
+100%{top:100%}
+}
+
+.progress{
+width:80%;
+max-width:300px;
+height:20px;
+border:2px solid white;
+margin-top:20px;
+border-radius:10px;
+overflow:hidden;
+}
+
+.progress-bar{
+height:100%;
+width:0%;
+background:#00ff88;
+}
+
+/* camera */
+
+#camera video{
+width:250px;
+border-radius:10px;
+border:3px solid white;
+}
+
+/* IP */
+
+#ipScreen{
+display:none;
+background:#001b2e;
+}
+
+/* hacked */
+
+#virus{
+display:none;
+background:red;
+animation:shake .2s infinite;
+}
+
+@keyframes shake{
+0%{transform:translate(2px,2px)}
+50%{transform:translate(-2px,-2px)}
+100%{transform:translate(2px,2px)}
+}
+
+/* notifications */
+
+.notification{
+position:fixed;
+top:-120px;
+left:50%;
+transform:translateX(-50%);
+width:92%;
+max-width:350px;
+background:white;
+color:black;
+border-radius:12px;
+padding:12px;
+box-shadow:0 6px 20px rgba(0,0,0,0.5);
+display:flex;
+align-items:center;
+gap:10px;
+transition:top .5s;
+z-index:9999;
+}
+
+.notification.show{
+top:15px;
+}
+
+/* screenshot flash */
+
+#flash{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:white;
+opacity:0;
+pointer-events:none;
+}
+
+/* police */
+
+#police{
+display:none;
+background:black;
+color:red;
+font-size:28px;
+}
+
+/* videos */
+
+#videos{
+display:none;
+padding:20px;
+}
+
+.video-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+gap:15px;
+max-width:900px;
+}
+
+.thumb{
+cursor:pointer;
+border:3px solid white;
+border-radius:10px;
+overflow:hidden;
+}
+
+.thumb video{
+width:100%;
+height:120px;
+object-fit:cover;
+}
+
+/* player */
+
+#player{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+justify-content:center;
+align-items:center;
+}
+
+#videoPlayer{
+width:100%;
+height:100%;
+object-fit:contain;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="flash"></div>
+
+<!-- QR -->
+
+<div id="qrPage" class="screen">
+
+<h2>📷 Scan This QR Code</h2>
+
+<img id="qrImage">
+
+<p>Scan using Google Lens</p>
+
+</div>
+
+
+<!-- SCANNER -->
+
+<div id="scanner" class="screen" style="display:none">
+
+<h1>🔍 Security Scan</h1>
+
+<div class="scan-box">
+<div class="scan-line"></div>
+</div>
+
+<div class="progress">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+
+<p>Scanning device...</p>
+
+</div>
+
+
+<!-- CAMERA -->
+
+<div id="camera" class="screen" style="display:none">
+
+<h2>Face Verification</h2>
+
+<video id="cam" autoplay></video>
+
+<p>Scanning face...</p>
+
+</div>
+
+
+<!-- IP -->
+
+<div id="ipScreen" class="screen">
+
+<h2>Tracking Location...</h2>
+
+<p id="ipText"></p>
+
+</div>
+
+
+<!-- HACKED -->
+
+<div id="virus" class="screen">
+
+<h1>⚠️ YOUR PHONE IS HACKED</h1>
+<p>Accessing bank account...</p>
+
+</div>
+
+
+<!-- BANK -->
+
+<div class="notification" id="bankNotify">
+
+🏦 ₹10000 debited from your account
+
+</div>
+
+
+<!-- WHATSAPP -->
+
+<div class="notification" id="waNotify">
+
+💬 WhatsApp: Your private data leaked!
+
+</div>
+
+
+<!-- BATTERY -->
+
+<div class="notification" id="batteryNotify">
+
+🔋 Battery system compromised!
+
+</div>
+
+
+<!-- POLICE -->
+
+<div id="police" class="screen">
+
+🚨 CYBER POLICE ALERT 🚨
+<p>Your device is under investigation</p>
+
+</div>
+
+
+<!-- VIDEOS -->
+
+<div id="videos">
+
+<h1>🤣 GOT YOU 🤣</h1>
+
+<div class="video-grid">
+
+<div class="thumb" onclick="playVideo('video1.mp4')">
+<video src="video1.mp4" muted loop></video>
+</div>
+
+<div class="thumb" onclick="playVideo('video2.mp4')">
+<video src="video2.mp4" muted loop></video>
+</div>
+
+<div class="thumb" onclick="playVideo('video3.mp4')">
+<video src="video3.mp4" muted loop></video>
+</div>
+
+<div class="thumb" onclick="playVideo('video4.mp4')">
+<video src="video4.mp4" muted loop></video>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- PLAYER -->
+
+<div id="player">
+
+<video id="videoPlayer" controls autoplay></video>
+
+</div>
+
+
+<audio id="siren" src="https://www.soundjay.com/police/police-siren.mp3"></audio>
+
+
+<script>
+
+/* QR */
+
+let params=new URLSearchParams(location.search)
+
+if(params.get("start")=="1"){
+
+document.getElementById("qrPage").style.display="none"
+document.getElementById("scanner").style.display="flex"
+
+startScan()
+
+}else{
+
+let url=location.href.split("?")[0]+"?start=1"
+
+document.getElementById("qrImage").src=
+"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data="+encodeURIComponent(url)
+
+}
+
+
+/* scan */
+
+function startScan(){
+
+let progress=0
+let bar=document.getElementById("progressBar")
+
+let scan=setInterval(function(){
+
+progress+=5
+bar.style.width=progress+"%"
+
+if(progress>=100){
+
+clearInterval(scan)
+startCamera()
+
+}
+
+},200)
+
+}
+
+
+/* camera */
+
+function startCamera(){
+
+document.getElementById("scanner").style.display="none"
+document.getElementById("camera").style.display="flex"
+
+navigator.mediaDevices.getUserMedia({video:true})
+.then(stream=>{
+document.getElementById("cam").srcObject=stream
+})
+
+setTimeout(showIP,4000)
+
+}
+
+
+/* IP */
+
+function showIP(){
+
+document.getElementById("camera").style.display="none"
+document.getElementById("ipScreen").style.display="flex"
+
+fetch("https://api.ipify.org?format=json")
+.then(r=>r.json())
+.then(d=>{
+document.getElementById("ipText").innerHTML="IP Address: "+d.ip
+})
+
+setTimeout(startHack,3000)
+
+}
+
+
+/* hack */
+
+function startHack(){
+
+document.getElementById("ipScreen").style.display="none"
+document.getElementById("virus").style.display="flex"
+
+setTimeout(showBank,2000)
+
+}
+
+
+/* bank */
+
+function showBank(){
+
+showNotify("bankNotify", showWhatsApp)
+
+}
+
+
+/* whatsapp */
+
+function showWhatsApp(){
+
+showNotify("waNotify", showBattery)
+
+}
+
+
+/* battery */
+
+function showBattery(){
+
+showNotify("batteryNotify", screenshot)
+
+}
+
+
+/* notification helper */
+
+function showNotify(id,next){
+
+let n=document.getElementById(id)
+
+n.classList.add("show")
+
+setTimeout(()=>{
+
+n.classList.remove("show")
+
+setTimeout(next,500)
+
+},2500)
+
+}
+
+
+/* screenshot */
+
+function screenshot(){
+
+let flash=document.getElementById("flash")
+
+flash.style.opacity=1
+
+setTimeout(()=>{
+
+flash.style.opacity=0
+
+showPolice()
+
+},200)
+
+}
+
+
+/* police */
+
+function showPolice(){
+
+document.getElementById("virus").style.display="none"
+document.getElementById("police").style.display="flex"
+
+document.getElementById("siren").play()
+
+setTimeout(showVideos,4000)
+
+}
+
+
+/* videos */
+
+function showVideos(){
+
+document.getElementById("police").style.display="none"
+document.getElementById("videos").style.display="block"
+
+}
+
+
+/* play video */
+
+function playVideo(src){
+
+document.getElementById("videos").style.display="none"
+
+let player=document.getElementById("player")
+let video=document.getElementById("videoPlayer")
+
+video.src=src
+
+player.style.display="flex"
+
+video.play()
+
+}
+
+</script>
+
+</body>
+</html>
